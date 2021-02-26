@@ -5,10 +5,6 @@ import java.io.*;
 public class Midterm {
 	private static int[][] dp_table;
 	private static int[] penalization;
-	private static final int NO_SOLUTION = Integer.MAX_VALUE;
-	private static final int NOT_INITIALIZED = -1;
-	
-
 	public static void main(String[] args) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		int chairs;
@@ -26,7 +22,10 @@ public class Midterm {
 		System.out.println(answer);
 	}
 
-	public static int lost_marks_recursive(int currIndex, int precJumpReq) {
+	public static int lost_marks_recursive(int[] penalization, int[][] dp_table, int currIndex, int precJumpReq) {
+		final int NO_SOLUTION = Integer.MAX_VALUE;
+		final int NOT_INITIALIZED = -1;
+
 		final int cidx = currIndex;
 		final int pjr = precJumpReq;
 
@@ -50,12 +49,12 @@ public class Midterm {
 
 		final int indexLeft = cidx - pjr;
 		if (indexLeft >= 0) {
-			minMarksLost = lost_marks_recursive(indexLeft, pjr - 1);
+			minMarksLost = lost_marks_recursive(penalization, dp_table, indexLeft, pjr - 1);
 		}
 
 		final int indexRight = cidx + pjr;
 		if (indexRight < penalization.length - 1) {
-			minMarksLost = Math.min(minMarksLost, lost_marks_recursive(indexRight, pjr));
+			minMarksLost = Math.min(minMarksLost, lost_marks_recursive(penalization, dp_table, indexRight, pjr));
 		}
 
 		if (minMarksLost == NO_SOLUTION) {
@@ -68,6 +67,8 @@ public class Midterm {
 	}
 	
 	public static int lost_marks(int[] penalization) {
+		final int NOT_INITIALIZED = -1;
+
 		dp_table = new int[penalization.length][penalization.length];
 		for (int i = 0; i < dp_table.length; ++i) {
 			for (int j = 0; j < dp_table[i].length; ++j) {
@@ -82,7 +83,7 @@ public class Midterm {
 			// if (precJumpReq <= 0) {
 			// 	System.exit(2);
 			// }
-			minMarksLost = Math.min(minMarksLost, lost_marks_recursive(i, precJumpReq));
+			minMarksLost = Math.min(minMarksLost, lost_marks_recursive(penalization, dp_table, i, precJumpReq));
 		}
 
 		return minMarksLost + penalization[indexLast];
