@@ -104,6 +104,9 @@ public class Game {
 			// 	}
 			// }
 
+			// later used for AOT verification of valid value
+			final HashMap<Region, ArrayList<Cell>> neigboringRegions = new HashMap<>();
+
 			// verify if a neighboring cell does not have the same value
 			for (final int[] currDeltaIndices : deltaIndices) {
 				final int otherRow = currDeltaIndices[0] + currCell.getRow();
@@ -120,6 +123,44 @@ public class Game {
 					if (otherCellValue == currCellValue) {
 						return false;
 					}
+
+					// initialize neigboringRegions
+					for (final Region r : board.getRegions()) {
+						if (r != currRegion) {
+							for (final Cell c : r.getCells()) {
+								if (c.getRow() == otherRow && c.getColumn() == otherColumn) {
+									if (!neigboringRegions.containsKey(r)) {
+										neigboringRegions.put(r, new ArrayList<>());
+									}
+
+									neigboringRegions.get(r).add(c);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// verify if the cell value is valid based on another region's size and current state
+			for (final Region r : neigboringRegions.keySet()) {
+				final int max_num = r.getCells().length;
+				final ArrayList<Integer> valuesRemaining = new ArrayList<>(max_num * 2);
+				final ArrayList<Cell> cellsRemaining = new ArrayList<>(Arrays.asList(r.getCells()));
+				
+				for (int num = 1; num <= max_num; ++num) valuesRemaining.add(num);
+				
+				for (final Cell c : r.getCells()) {
+					if (valuesRemaining.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
+						cellsRemaining.remove(c);
+					}
+				}
+
+				final int sizeOfCellsUndefined = cellsRemaining.size();
+				cellsRemaining.retainAll(neigboringRegions.get(r));
+				final int sizeOfNeigboringCellsUndefined = cellsRemaining.size();
+
+				if (sizeOfCellsUndefined == sizeOfNeigboringCellsUndefined && valuesRemaining.contains(currCellValue)) {
+					return false;
 				}
 			}
 		}
