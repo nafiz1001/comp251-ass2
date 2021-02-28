@@ -1,5 +1,7 @@
 import java.util.*;
 
+import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+
 public class HW_Sched {
 	ArrayList<Assignment> Assignments = new ArrayList<Assignment>();
 	int m;
@@ -36,15 +38,6 @@ public class HW_Sched {
 		for (int i=0; i < homeworkPlan.length; ++i) {
 			homeworkPlan[i] = -1;
 		}
-
-		int prevWeight = -1;
-		int prevDeadline = -1;
-		
-		for (Assignment a : Assignments) {
-			if (prevDeadline != a.deadline) {
-				prevWeight = a.weight;
-				prevDeadline = a.deadline;
-			}
 
 		for (int i = 0; i < Assignments.size(); ++i) {
 			Assignment a = Assignments.get(i);
