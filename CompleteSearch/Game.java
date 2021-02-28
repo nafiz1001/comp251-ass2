@@ -161,22 +161,16 @@ public class Game {
 			// verify if the cell value is valid based on another region's size and current state
 			for (final Region r : neigboringRegions.keySet()) {
 				final int max_num = r.getCells().length;
-				final ArrayList<Integer> valuesRemaining = new ArrayList<>(max_num * 2);
-				final ArrayList<Cell> cellsRemaining = new ArrayList<>(Arrays.asList(r.getCells()));
+				final ArrayList<Integer> remainingValues = new ArrayList<>(max_num * 2);
+				final ArrayList<Cell> remainingCells = new ArrayList<>();
 				
-				for (int num = 1; num <= max_num; ++num) valuesRemaining.add(num);
+				remainingCellsAndValues(r, remainingCells, remainingValues);
 				
-				for (final Cell c : r.getCells()) {
-					if (valuesRemaining.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
-						cellsRemaining.remove(c);
-					}
-				}
+				final int sizeOfCellsUndefined = remainingCells.size();
+				remainingCells.retainAll(neigboringRegions.get(r));
+				final int sizeOfNeigboringCellsUndefined = remainingCells.size();
 
-				final int sizeOfCellsUndefined = cellsRemaining.size();
-				cellsRemaining.retainAll(neigboringRegions.get(r));
-				final int sizeOfNeigboringCellsUndefined = cellsRemaining.size();
-
-				if (sizeOfCellsUndefined == sizeOfNeigboringCellsUndefined && valuesRemaining.contains(currCellValue)) {
+				if (sizeOfCellsUndefined == sizeOfNeigboringCellsUndefined && remainingValues.contains(currCellValue)) {
 					return false;
 				}
 			}
