@@ -21,5 +21,4 @@ class Assignment implements Comparator<Assignment>{
 	public int compare(Assignment a1, Assignment a2) {
 		return  (a2.deadline + a2.weight * 1000) - (a1.deadline + a1.weight * 1000);
 	}
-	}
 }
