@@ -133,9 +133,11 @@ public class Game {
 		for (final Region r : board.getRegions()) {
 			final int max_num = r.getCells().length;
 			final ArrayList<Integer> valuesRemaining = new ArrayList<>(max_num * 2);
-			final ArrayList<Integer> cellsRemaining = new ArrayList<>(max_num * 2);
+			final ArrayList<Cell> cellsRemaining = new ArrayList<>(Arrays.asList(r.getCells()));
 			
-			for (int i = 1; i <= max_num; ++i) valuesRemaining.add(i);
+			for (int i = 1; i <= max_num; ++i) {
+				valuesRemaining.add(i);
+			}
 			
 			for (final Cell c : r.getCells()) {
 				if (valuesRemaining.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
