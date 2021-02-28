@@ -46,14 +46,14 @@ public class HW_Sched {
 				prevDeadline = a.deadline;
 			}
 
-			if (a.deadline == prevDeadline) {
-				if (a.weight >= prevWeight) {
-					homeworkPlan[a.deadline - 1] = a.number;
+		for (int i = 0; i < Assignments.size(); ++i) {
+			Assignment a = Assignments.get(i);
+			for (int j = a.deadline - 1; j >= 0; --j) {
+				if (homeworkPlan[j] == -1) {
+					homeworkPlan[j] = a.number;
+					break;
 				}
 			}
-
-			prevWeight = a.weight;
-			prevDeadline = a.deadline;
 		}
 
 		return homeworkPlan;
