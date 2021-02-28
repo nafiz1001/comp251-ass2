@@ -36,8 +36,26 @@ public class HW_Sched {
 		for (int i=0; i < homeworkPlan.length; ++i) {
 			homeworkPlan[i] = -1;
 		}
-	
+
+		int prevWeight = -1;
+		int prevDeadline = -1;
 		
+		for (Assignment a : Assignments) {
+			if (prevDeadline != a.deadline) {
+				prevWeight = a.weight;
+				prevDeadline = a.deadline;
+			}
+
+			if (a.deadline == prevDeadline) {
+				if (a.weight >= prevWeight) {
+					homeworkPlan[a.deadline - 1] = a.number;
+				}
+			}
+
+			prevWeight = a.weight;
+			prevDeadline = a.deadline;
+		}
+
 		return homeworkPlan;
 	}
 }
