@@ -19,6 +19,6 @@ class Assignment implements Comparator<Assignment>{
 	 */
 	@Override
 	public int compare(Assignment a1, Assignment a2) {
-		return  a1.deadline - a2.deadline;
+		return  (a1.deadline * 1000 + a1.weight) - (a2.deadline * 1000 + a2.weight);
 	}
 }
