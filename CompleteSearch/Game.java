@@ -78,6 +78,46 @@ public class Game {
 
 	}
 	
+	public boolean isBoardChangeValid(Board board, ArrayList<Cell> cellsChanged, ArrayList<Region> regionsChanged) {
+		final int[][] deltaIndices = {
+			{0, -1}, // top
+			{1, -1}, // top right
+			{1, 0}, // right
+			{1, 1}, // bottom right
+			{0, 1}, // bottom
+			{-1, 1}, // bottom left
+			{-1, 0}, // left
+			{-1, -1} // top left
+		};
+
+		for (int i = 0; i < cellsChanged.size(); ++i) {
+			final Cell currCell = cellsChanged.get(i);
+			final Region currRegion = regionsChanged.get(i);
+
+			final int currCellValue = board.getValue(currCell.getRow(), currCell.getColumn());
+
+			// verify if a neighboring cell does not have the same value
+			for (final int[] currDeltaIndices : deltaIndices) {
+				final int otherRow = currDeltaIndices[0] + currCell.getRow();
+				final int otherColumn = currDeltaIndices[1] + currCell.getColumn();
+				final int otherCellValue = board.getValue(otherRow, otherColumn);
+
+				if (
+					otherRow >= 0 &&
+					otherRow < board.num_rows &&
+					otherColumn >= 0 &&
+					otherColumn < board.num_columns
+				) {
+					if (otherCellValue == currCellValue) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
 	public ArrayList<Cell> solveByRegionSize(Board board) {
 		final ArrayList<Cell> cellsChanged = new ArrayList<>(board.num_rows * board.num_columns * 2);
 
