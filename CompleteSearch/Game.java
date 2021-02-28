@@ -78,6 +78,32 @@ public class Game {
 
 	}
 	
+	public ArrayList<Cell> solveByRegionSize(Board board) {
+		final ArrayList<Cell> cellsChanged = new ArrayList<>(board.num_rows * board.num_columns * 2);
+
+		for (final Region r : board.getRegions()) {
+			final int max_num = r.getCells().length;
+			final ArrayList<Integer> valuesRemaining = new ArrayList<>(max_num * 2);
+			final ArrayList<Integer> cellsRemaining = new ArrayList<>(max_num * 2);
+			
+			for (int i = 1; i <= max_num; ++i) valuesRemaining.add(i);
+			
+			for (final Cell c : r.getCells()) {
+				if (valuesRemaining.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
+					cellsRemaining.remove(c);
+				}
+			}
+
+			if (cellsRemaining.size() == 1) {
+				final Cell c = cellsRemaining.get(0);
+				board.setValue(c.getRow(), c.getColumn(), valuesRemaining.get(0));
+				cellsChanged.add(c);
+			}
+		}
+
+		return cellsChanged;
+	}
+	
 	public int[][] solver() {
 		//To Do => Please start coding your solution here
 		return sudoku.getValues();
