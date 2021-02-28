@@ -108,7 +108,6 @@ public class Game {
 			for (final int[] currDeltaIndices : deltaIndices) {
 				final int otherRow = currDeltaIndices[0] + currCell.getRow();
 				final int otherColumn = currDeltaIndices[1] + currCell.getColumn();
-				final int otherCellValue = board.getValue(otherRow, otherColumn);
 
 				if (
 					otherRow >= 0 &&
@@ -116,6 +115,8 @@ public class Game {
 					otherColumn >= 0 &&
 					otherColumn < board.num_columns
 				) {
+					final int otherCellValue = board.getValue(otherRow, otherColumn);
+					
 					if (otherCellValue == currCellValue) {
 						return false;
 					}
