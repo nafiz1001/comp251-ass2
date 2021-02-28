@@ -96,6 +96,14 @@ public class Game {
 
 			final int currCellValue = board.getValue(currCell.getRow(), currCell.getColumn());
 
+			// verify if cell's value not already present in its region
+			for (final Cell siblingCell : currRegion.getCells()) {
+				final int siblingCellValue = board.getValue(siblingCell.getRow(), siblingCell.getColumn());
+				if (currCell != siblingCell && currCellValue == siblingCellValue) {
+					return false;
+				}
+			}
+
 			// verify if a neighboring cell does not have the same value
 			for (final int[] currDeltaIndices : deltaIndices) {
 				final int otherRow = currDeltaIndices[0] + currCell.getRow();
