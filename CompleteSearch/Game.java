@@ -78,6 +78,23 @@ public class Game {
 
 	}
 	
+	public void remainingCellsAndValues(Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
+		final int max_num = region.getCells().length;
+
+		remainingValues.ensureCapacity(max_num * 2);
+		remainingCells.addAll(Arrays.asList(r.getCells()));
+		
+		for (int i = 1; i <= max_num; ++i) {
+			valuesRemaining.add(i);
+		}
+		
+		for (final Cell c : region.getCells()) {
+			if (valuesRemaining.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
+				cellsRemaining.remove(c);
+			}
+		}
+	}
+	
 	public boolean isBoardChangeValid(Board board, ArrayList<Cell> cellsChanged, ArrayList<Region> regionsChanged) {
 		final int[][] deltaIndices = {
 			{0, -1}, // top
