@@ -5,6 +5,8 @@ import java.io.*;
 public class Midterm {
 	private static int[][] dp_table;
 	private static int[] penalization;
+	
+
 	public static void main(String[] args) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		int chairs;
