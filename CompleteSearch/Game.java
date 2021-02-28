@@ -161,7 +161,7 @@ public class Game {
 			// verify if the cell value is valid based on another region's size and current state
 			for (final Region r : neigboringRegions.keySet()) {
 				final int max_num = r.getCells().length;
-				final ArrayList<Integer> remainingValues = new ArrayList<>(max_num * 2);
+				final ArrayList<Integer> remainingValues = new ArrayList<>();
 				final ArrayList<Cell> remainingCells = new ArrayList<>();
 
 				remainingCellsAndValues(r, remainingCells, remainingValues);
