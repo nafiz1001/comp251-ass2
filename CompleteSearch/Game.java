@@ -166,24 +166,24 @@ public class Game {
 		return invalidValues;
 	}
 
-	public ArrayList<Cell> solveByRemainingValues(Board board) {
-		final ArrayList<Cell> cellsChanged = new ArrayList<>(board.num_rows * board.num_columns * 2);
+	// public ArrayList<Cell> solveByRemainingValues(Board board) {
+	// 	final ArrayList<Cell> cellsChanged = new ArrayList<>(board.num_rows * board.num_columns * 2);
 
-		for (final Region r : board.getRegions()) {
-			final ArrayList<Integer> remainingValues = new ArrayList<>();
-			final ArrayList<Cell> remainingCells = new ArrayList<>();
+	// 	for (final Region r : board.getRegions()) {
+	// 		final ArrayList<Integer> remainingValues = new ArrayList<>();
+	// 		final ArrayList<Cell> remainingCells = new ArrayList<>();
 
-			remainingCellsAndValues(r, remainingCells, remainingValues);
+	// 		remainingCellsAndValues(r, remainingCells, remainingValues);
 
-			if (remainingCells.size() == 1) {
-				final Cell c = remainingCells.get(0);
-				board.setValue(c.getRow(), c.getColumn(), remainingValues.get(0));
-				cellsChanged.add(c);
-			}
-		}
+	// 		if (remainingCells.size() == 1) {
+	// 			final Cell c = remainingCells.get(0);
+	// 			board.setValue(c.getRow(), c.getColumn(), remainingValues.get(0));
+	// 			cellsChanged.add(c);
+	// 		}
+	// 	}
 
-		return cellsChanged;
-	}
+	// 	return cellsChanged;
+	// }
 	
 	public int[][] solver() {
 		//To Do => Please start coding your solution here
