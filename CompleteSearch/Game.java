@@ -81,7 +81,7 @@ public class Game {
 	public void remainingCellsAndValues(Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
 		final int max_num = region.getCells().length;
 
-		remainingValues.ensureCapacity(max_num * 2);
+		remainingValues.ensureCapacity(max_num);
 		remainingCells.addAll(Arrays.asList(r.getCells()));
 		
 		for (int i = 1; i <= max_num; ++i) {
