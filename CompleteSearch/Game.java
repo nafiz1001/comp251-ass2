@@ -78,7 +78,7 @@ public class Game {
 
 	}
 
-        public void remainingCellsAndValues(Board board, Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
+        public void remainingCellsAndValues(int[][] values, Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
 		final int max_num = region.getCells().length;
 
 		remainingValues.ensureCapacity(max_num);
@@ -89,13 +89,13 @@ public class Game {
 		}
 		
 		for (final Cell c : region.getCells()) {
-			if (remainingValues.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
+			if (remainingValues.remove((Object) values[c.getRow()][c.getColumn()])) {
 				remainingCells.remove(c);
 			}
 		}
 	}
 
-        public HashSet<Integer> invalidValues(Board board, Region region, Cell cell, Cell[] indexToCell, HashMap<Cell, Region> cellToRegion) {
+        public HashSet<Integer> invalidValues(int[][] values, Region region, Cell cell, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
 		final HashSet<Integer> invalidValues = new HashSet<>();
 
 		final int[][] deltaIndices = {
@@ -111,7 +111,7 @@ public class Game {
 
 		// cannot contain value already present in the region
 		for (final Cell siblingCell : region.getCells()) {
-			final int siblingCellValue = board.getValue(siblingCell.getRow(), siblingCell.getColumn());
+			final int siblingCellValue = values[siblingCell.getRow()][siblingCell.getColumn()];
 			if (cell != siblingCell && siblingCellValue != -1) invalidValues.add(siblingCellValue);
 		}
 
@@ -125,14 +125,14 @@ public class Game {
 
 			if (
 				otherRow >= 0 &&
-				otherRow < board.num_rows &&
+				otherRow < sudoku.num_rows &&
 				otherColumn >= 0 &&
-				otherColumn < board.num_columns
+				otherColumn < sudoku.num_columns
 			) {
-				final int otherCellValue = board.getValue(otherRow, otherColumn);
-				if (otherCellValue != -1) invalidValues.add(board.getValue(otherRow, otherColumn));
+				final int otherCellValue = values[otherRow][otherColumn];
+				if (otherCellValue != -1) invalidValues.add(values[otherRow][otherColumn]);
 
-				final Cell otherCell = indexToCell[otherColumn + otherRow * board.num_columns];
+				final Cell otherCell = coordToCell[otherRow][otherColumn];
 				final Region neighboringRegion = cellToRegion.get(otherCell);
 				if (!neighboringRegionToCells.containsKey(neighboringRegion)) {
 					neighboringRegionToCells.put(neighboringRegion, new ArrayList<>());
@@ -147,7 +147,7 @@ public class Game {
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 
-			remainingCellsAndValues(board, r, remainingCells, remainingValues);
+			remainingCellsAndValues(values, r, remainingCells, remainingValues);
 
 			remainingCells.retainAll(neighboringRegionToCells.get(r));
 
