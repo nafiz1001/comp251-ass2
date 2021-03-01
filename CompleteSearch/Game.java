@@ -158,8 +158,8 @@ public class Game {
 
 			remainingCells.retainAll(neigboringRegions.get(r));
 
-			for (final Cell c : remainingCells) {
-				invalidValues.add(board.getValue(c.getRow(), c.getColumn()));
+			if (remainingCells.size() == remainingValues.size()) {
+				for (int v : remainingValues) invalidValues.add(v);
 			}
 		}
 
