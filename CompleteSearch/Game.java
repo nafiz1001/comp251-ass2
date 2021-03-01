@@ -94,8 +94,10 @@ public class Game {
 			}
 		}
 	}
-	
-	public boolean isBoardChangeValid(Board board, ArrayList<Cell> cellsChanged, ArrayList<Region> regionsChanged) {
+
+	public HashSet<Integer> invalidValues(Region region, Cell cell) {
+		final HashSet<Integer> invalidValues = new HashSet<>();
+
 		final int[][] deltaIndices = {
 			{0, -1}, // top
 			{1, -1}, // top right
@@ -107,75 +109,61 @@ public class Game {
 			{-1, -1} // top left
 		};
 
-		for (int i = 0; i < cellsChanged.size(); ++i) {
-			final Cell currCell = cellsChanged.get(i);
-			final Region currRegion = regionsChanged.get(i);
+		// cannot contain value already present in the region
+		for (final Cell siblingCell : currRegion.getCells()) {
+			final int siblingCellValue = board.getValue(siblingCell.getRow(), siblingCell.getColumn());
+			if (cell != siblingCell && siblingCellValue != -1) invalidValues.add(siblingCellValue);
+		}
 
-			final int currCellValue = board.getValue(currCell.getRow(), currCell.getColumn());
+		// later used for AOT invalid value
+		final HashMap<Region, ArrayList<Cell>> neigboringRegions = new HashMap<>();
 
-			// // verify if cell's value not already present in its region
-			// for (final Cell siblingCell : currRegion.getCells()) {
-			// 	final int siblingCellValue = board.getValue(siblingCell.getRow(), siblingCell.getColumn());
-			// 	if (currCell != siblingCell && currCellValue == siblingCellValue) {
-			// 		return false;
-			// 	}
-			// }
+		// do not use value of neighboring cells
+		for (final int[] currDeltaIndices : deltaIndices) {
+			final int otherRow = currDeltaIndices[0] + currCell.getRow();
+			final int otherColumn = currDeltaIndices[1] + currCell.getColumn();
 
-			// later used for AOT verification of valid value
-			final HashMap<Region, ArrayList<Cell>> neigboringRegions = new HashMap<>();
+			if (
+				otherRow >= 0 &&
+				otherRow < board.num_rows &&
+				otherColumn >= 0 &&
+				otherColumn < board.num_columns
+			) {
+				final int otherCellValue = board.getValue(otherRow, otherColumn);
+				if (otherCellValue != -1) invalidValues.add(board.getValue(otherRow, otherColumn));
 
-			// verify if a neighboring cell does not have the same value
-			for (final int[] currDeltaIndices : deltaIndices) {
-				final int otherRow = currDeltaIndices[0] + currCell.getRow();
-				final int otherColumn = currDeltaIndices[1] + currCell.getColumn();
-
-				if (
-					otherRow >= 0 &&
-					otherRow < board.num_rows &&
-					otherColumn >= 0 &&
-					otherColumn < board.num_columns
-				) {
-					final int otherCellValue = board.getValue(otherRow, otherColumn);
-					
-					if (otherCellValue == currCellValue) {
-						return false;
-					}
-
-					// initialize neigboringRegions
-					for (final Region r : board.getRegions()) {
-						if (r != currRegion) {
-							for (final Cell c : r.getCells()) {
-								if (c.getRow() == otherRow && c.getColumn() == otherColumn) {
-									if (!neigboringRegions.containsKey(r)) {
-										neigboringRegions.put(r, new ArrayList<>());
-									}
-
-									neigboringRegions.get(r).add(c);
+				// initialize neigboringRegions
+				for (final Region r : board.getRegions()) {
+					if (r != region) {
+						for (final Cell c : r.getCells()) {
+							if (c.getRow() == otherRow && c.getColumn() == otherColumn) {
+								if (!neigboringRegions.containsKey(r)) {
+									neigboringRegions.put(r, new ArrayList<>());
 								}
+
+								neigboringRegions.get(r).add(c);
 							}
 						}
 					}
 				}
 			}
+		}
 
-			// verify if the cell value is valid based on another region's size and current state
-			for (final Region r : neigboringRegions.keySet()) {
-				final ArrayList<Integer> remainingValues = new ArrayList<>();
-				final ArrayList<Cell> remainingCells = new ArrayList<>();
+		// verify if the cell value is valid based on another region's size and current state
+		for (final Region r : neigboringRegions.keySet()) {
+			final ArrayList<Integer> remainingValues = new ArrayList<>();
+			final ArrayList<Cell> remainingCells = new ArrayList<>();
 
-				remainingCellsAndValues(r, remainingCells, remainingValues);
+			remainingCellsAndValues(r, remainingCells, remainingValues);
 
-				final int sizeOfCellsUndefined = remainingCells.size();
-				remainingCells.retainAll(neigboringRegions.get(r));
-				final int sizeOfNeigboringCellsUndefined = remainingCells.size();
+			remainingCells.retainAll(neigboringRegions.get(r));
 
-				if (sizeOfCellsUndefined == sizeOfNeigboringCellsUndefined && remainingValues.contains(currCellValue)) {
-					return false;
-				}
+			for (final Cell c : remainingCells) {
+				invalidValues.add(board.getValue(c.getRow(), c.getColumn()));
 			}
 		}
 
-		return true;
+		return invalidValues;
 	}
 
 	public ArrayList<Cell> solveByRegionSize(Board board) {
