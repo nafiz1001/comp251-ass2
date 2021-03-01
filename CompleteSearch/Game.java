@@ -85,12 +85,12 @@ public class Game {
 		remainingCells.addAll(Arrays.asList(r.getCells()));
 		
 		for (int i = 1; i <= max_num; ++i) {
-			valuesRemaining.add(i);
+			remainingValues.add(i);
 		}
 		
 		for (final Cell c : region.getCells()) {
-			if (valuesRemaining.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
-				cellsRemaining.remove(c);
+			if (remainingValues.remove((Object) board.getValue(c.getRow(), c.getColumn()))) {
+				remainingCells.remove(c);
 			}
 		}
 	}
