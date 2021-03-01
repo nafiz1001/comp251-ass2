@@ -166,7 +166,7 @@ public class Game {
 		return invalidValues;
 	}
 
-	public ArrayList<Cell> solveByRegionSize(Board board) {
+	public ArrayList<Cell> solveByRemainingValues(Board board) {
 		final ArrayList<Cell> cellsChanged = new ArrayList<>(board.num_rows * board.num_columns * 2);
 
 		for (final Region r : board.getRegions()) {
