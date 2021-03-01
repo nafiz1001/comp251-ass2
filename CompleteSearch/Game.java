@@ -78,11 +78,11 @@ public class Game {
 
 	}
 
-	public void remainingCellsAndValues(Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
+        public void remainingCellsAndValues(Board board, Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
 		final int max_num = region.getCells().length;
 
 		remainingValues.ensureCapacity(max_num);
-		remainingCells.addAll(Arrays.asList(r.getCells()));
+		remainingCells.addAll(Arrays.asList(region.getCells()));
 		
 		for (int i = 1; i <= max_num; ++i) {
 			remainingValues.add(i);
@@ -95,7 +95,7 @@ public class Game {
 		}
 	}
 
-	public HashSet<Integer> invalidValues(Region region, Cell cell) {
+        public HashSet<Integer> invalidValues(Board board, Region region, Cell cell) {
 		final HashSet<Integer> invalidValues = new HashSet<>();
 
 		final int[][] deltaIndices = {
@@ -110,7 +110,7 @@ public class Game {
 		};
 
 		// cannot contain value already present in the region
-		for (final Cell siblingCell : currRegion.getCells()) {
+		for (final Cell siblingCell : region.getCells()) {
 			final int siblingCellValue = board.getValue(siblingCell.getRow(), siblingCell.getColumn());
 			if (cell != siblingCell && siblingCellValue != -1) invalidValues.add(siblingCellValue);
 		}
@@ -120,8 +120,8 @@ public class Game {
 
 		// do not use value of neighboring cells
 		for (final int[] currDeltaIndices : deltaIndices) {
-			final int otherRow = currDeltaIndices[0] + currCell.getRow();
-			final int otherColumn = currDeltaIndices[1] + currCell.getColumn();
+			final int otherRow = currDeltaIndices[0] + cell.getRow();
+			final int otherColumn = currDeltaIndices[1] + cell.getColumn();
 
 			if (
 				otherRow >= 0 &&
@@ -154,7 +154,7 @@ public class Game {
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 
-			remainingCellsAndValues(r, remainingCells, remainingValues);
+			remainingCellsAndValues(board, r, remainingCells, remainingValues);
 
 			remainingCells.retainAll(neigboringRegions.get(r));
 
