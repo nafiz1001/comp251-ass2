@@ -95,7 +95,7 @@ public class Game {
 		}
 	}
 
-        public HashSet<Integer> invalidValues(Board board, Region region, Cell cell) {
+        public HashSet<Integer> invalidValues(Board board, Region region, Cell cell, Cell[] indexToCell, HashMap<Cell, Region> cellToRegion) {
 		final HashSet<Integer> invalidValues = new HashSet<>();
 
 		final int[][] deltaIndices = {
@@ -116,7 +116,7 @@ public class Game {
 		}
 
 		// later used for AOT invalid value
-		final HashMap<Region, ArrayList<Cell>> neigboringRegions = new HashMap<>();
+		final HashMap<Region, ArrayList<Cell>> neigboringRegionToCells = new HashMap<>();
 
 		// do not use value of neighboring cells
 		for (final int[] currDeltaIndices : deltaIndices) {
@@ -132,31 +132,24 @@ public class Game {
 				final int otherCellValue = board.getValue(otherRow, otherColumn);
 				if (otherCellValue != -1) invalidValues.add(board.getValue(otherRow, otherColumn));
 
-				// initialize neigboringRegions
-				for (final Region r : board.getRegions()) {
-					if (r != region) {
-						for (final Cell c : r.getCells()) {
-							if (c.getRow() == otherRow && c.getColumn() == otherColumn) {
-								if (!neigboringRegions.containsKey(r)) {
-									neigboringRegions.put(r, new ArrayList<>());
+				final Cell otherCell = indexToCell[otherColumn + otherRow * board.num_columns];
+				final Region neighboringRegion = cellToRegion.get(otherCell);
+				if (!neigboringRegionToCells.containsKey(neighboringRegion)) {
+					neigboringRegionToCells.put(neighboringRegion, new ArrayList<>());
 								}
 
-								neigboringRegions.get(r).add(c);
-							}
-						}
-					}
-				}
+				neigboringRegionToCells.get(neighboringRegion).add(otherCell);
 			}
 		}
 
 		// verify if the cell value is valid based on another region's size and current state
-		for (final Region r : neigboringRegions.keySet()) {
+		for (final Region r : neigboringRegionToCells.keySet()) {
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 
 			remainingCellsAndValues(board, r, remainingCells, remainingValues);
 
-			remainingCells.retainAll(neigboringRegions.get(r));
+			remainingCells.retainAll(neigboringRegionToCells.get(r));
 
 			if (remainingCells.size() == remainingValues.size()) {
 				for (int v : remainingValues) invalidValues.add(v);
