@@ -110,9 +110,9 @@ public class Game {
 		};
 
 		// cannot contain value already present in the region
-		for (final Cell siblingCell : region.getCells()) {
-			final int siblingCellValue = values[siblingCell.getRow()][siblingCell.getColumn()];
-			if (cell != siblingCell && siblingCellValue != -1) invalidValues.add(siblingCellValue);
+		for (final Cell otherCell : region.getCells()) {
+			final int otherCellValue = values[otherCell.getRow()][otherCell.getColumn()];
+			if (cell != otherCell && otherCellValue != -1) invalidValues.add(otherCellValue);
 		}
 
 		// later used for AOT invalid value
@@ -120,8 +120,8 @@ public class Game {
 
 		// do not use value of neighboring cells
 		for (final int[] currDeltaIndices : deltaIndices) {
-			final int otherRow = currDeltaIndices[0] + cell.getRow();
-			final int otherColumn = currDeltaIndices[1] + cell.getColumn();
+			final int otherRow = currDeltaIndices[0] + cell.getColumn();
+			final int otherColumn = currDeltaIndices[1] + cell.getRow();
 
 			if (
 				otherRow >= 0 &&
@@ -159,27 +159,104 @@ public class Game {
 		return invalidValues;
 	}
 
-	// public ArrayList<Cell> solveByRemainingValues(Board board) {
-	// 	final ArrayList<Cell> cellsChanged = new ArrayList<>(board.num_rows * board.num_columns * 2);
+	public void solveByObviousness(int[][] values) {
+		for (final Region r : sudoku.getRegions()) {
+			final ArrayList<Cell> remainingCells = new ArrayList<>();
+			final ArrayList<Integer> remainingValues = new ArrayList<>();
+			remainingCellsAndValues(values, r, remainingCells, remainingValues);
 
-	// 	for (final Region r : board.getRegions()) {
-	// 		final ArrayList<Integer> remainingValues = new ArrayList<>();
-	// 		final ArrayList<Cell> remainingCells = new ArrayList<>();
+			if (remainingValues.size() == 1) {
+				final Cell remainingCell = remainingCells.get(0);
+				sudoku.setValue(remainingCell.getRow(), remainingCell.getColumn(), remainingValues.get(0));
+			}
+		}
+	}
 
-	// 		remainingCellsAndValues(r, remainingCells, remainingValues);
+	public void printValues(int[][] answer) {
+		for (int i=0; i<answer.length;i++) {
+			for (int j=0; j<answer[0].length; j++) {
+				System.out.print(answer[i][j]);
+				if (j<answer[0].length -1) {
+					System.out.print(" ");
+				}
+			}
+			System.out.println();
+		}
+	}
 
-	// 		if (remainingCells.size() == 1) {
-	// 			final Cell c = remainingCells.get(0);
-	// 			board.setValue(c.getRow(), c.getColumn(), remainingValues.get(0));
-	// 			cellsChanged.add(c);
-	// 		}
-	// 	}
+	public int[][] copyValues(int[][] src) {
+		final int[][] dst = new int[sudoku.num_rows][sudoku.num_columns];
+		for (int row = 0; row < src.length; ++row) {
+			for (int col = 0; col < src[row].length; ++col) {
+				dst[row][col] = src[row][col];
+			}
+		}
 
-	// 	return cellsChanged;
-	// }
+		return dst;
+	}
+
+	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
+		// initial progress
+		solveByObviousness(values);
+
+		for (final Region r : sudoku.getRegions()) {
+			final ArrayList<Cell> remainingCells = new ArrayList<>();
+			final ArrayList<Integer> remainingValues = new ArrayList<>();
+			remainingCellsAndValues(values, r, remainingCells, remainingValues);
+			
+			for (final Cell c : remainingCells) {
+				remainingValues.removeAll(invalidValues(values, r, c, coordToCell, cellToRegion));
+
+				for (final Integer remainingValue : remainingValues) {
+					final int[][] valuesCopy = copyValues(values);
+					valuesCopy[c.row][c.column] = remainingValue;
+					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
+
+					if (solution != null) {
+						return solution;
+					}
+				}
+			}
+		}
+
+		return null;
+	}
 	
 	public int[][] solver() {
-		//To Do => Please start coding your solution here
+		final Cell[][] coordToCell = new Cell[sudoku.num_rows][sudoku.num_columns];
+		final HashMap<Cell, Region> cellToRegion = new HashMap<>();
+		for (final Region r : sudoku.getRegions()) {
+			// initialise indexToCell and cellToRegion
+			for (final Cell c : r.getCells()) {
+				coordToCell[c.getRow()][c.getColumn()] = c;
+				cellToRegion.put(c, r);
+			}
+		}
+
+		// initial progress
+		solveByObviousness(sudoku.getValues());
+
+		for (final Region r : sudoku.getRegions()) {
+			final ArrayList<Cell> remainingCells = new ArrayList<>();
+			final ArrayList<Integer> remainingValues = new ArrayList<>();
+			remainingCellsAndValues(values, r, remainingCells, remainingValues);
+
+			for (final Cell c : remainingCells) {
+				remainingValues.removeAll(invalidValues(sudoku.getValues(), r, c, coordToCell, cellToRegion));
+
+				for (final Integer remainingValue : remainingValues) {
+					final int[][] valuesCopy = copyValues(sudoku.getValues());
+					valuesCopy[c.row][c.column] = remainingValue;
+					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
+
+					if (solution != null) {
+						sudoku.setValues(solution);
+						return sudoku.getValues();
+					}
+				}
+			}
+		}
+
 		return sudoku.getValues();
 	}
 
