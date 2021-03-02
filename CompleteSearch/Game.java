@@ -173,16 +173,49 @@ public class Game {
 		}
 	}
 
-	public void printValues(int[][] answer) {
-		for (int i=0; i<answer.length;i++) {
-			for (int j=0; j<answer[0].length; j++) {
-				System.out.print(answer[i][j]);
-				if (j<answer[0].length -1) {
-					System.out.print(" ");
+	public String valuesToString(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, Cell currentCell) {
+		final StringBuffer stringBuffer = new StringBuffer();
+		final String ANSI_EFFECT = "\u001B[30m\u001B[47m";
+		final String ANSI_RESET = "\u001B[0m";
+
+		for (int i=0; i<values.length;i++) {
+			for (int j=0; j<values[0].length; j++) {
+				if (currentCell != null && coordToCell[i][j] == currentCell) {
+					stringBuffer.append(ANSI_EFFECT);
+				}
+				stringBuffer.append(String.format("%2d", values[i][j]));
+				if (currentCell != null && coordToCell[i][j] == currentCell) {
+					stringBuffer.append(ANSI_RESET);
+				}
+				if (j<values[0].length -1) {
+					stringBuffer.append(" ");
 				}
 			}
-			System.out.println();
+
+			stringBuffer.append("    ");
+
+			for (int j=0; j<values[0].length; j++) {
+				for (int index = 0; index < sudoku.getRegions().length; ++index) {
+					if (sudoku.getRegion(index).equals(cellToRegion.get(coordToCell[i][j]))) {
+						if (currentCell != null && coordToCell[i][j] == currentCell) {
+							stringBuffer.append(ANSI_EFFECT);
+						}
+						stringBuffer.append((char)('A' + index));
+						if (currentCell != null && coordToCell[i][j] == currentCell) {
+							stringBuffer.append(ANSI_RESET);
+						}
+						break;
+					}
+				}
+				if (j<values[0].length -1) {
+					stringBuffer.append(" ");
+				}
+			}
+
+			stringBuffer.append("\n");
 		}
+
+		return stringBuffer.toString();
 	}
 
 	public int[][] copyValues(int[][] src) {
@@ -199,6 +232,8 @@ public class Game {
 	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
 		// initial progress
 		solveByRemainingValues(values);
+
+		System.out.println(valuesToString(values, coordToCell, cellToRegion, null));
 
 		boolean alreadySolved = true;
 
@@ -218,6 +253,9 @@ public class Game {
 
 					final int[][] valuesCopy = copyValues(values);
 					valuesCopy[c.row][c.column] = remainingValue;
+
+					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
 
 					if (solution != null) {
@@ -248,6 +286,8 @@ public class Game {
 		// initial progress
 		solveByRemainingValues(sudoku.getValues());
 
+		System.out.println(valuesToString(sudoku.getValues(), coordToCell, cellToRegion, null));
+
 		for (final Region r : sudoku.getRegions()) {
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
@@ -259,6 +299,9 @@ public class Game {
 				for (final Integer remainingValue : remainingValues) {
 					final int[][] valuesCopy = copyValues(sudoku.getValues());
 					valuesCopy[c.row][c.column] = remainingValue;
+
+					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
 
 					if (solution != null) {
