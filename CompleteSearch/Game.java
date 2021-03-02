@@ -89,7 +89,8 @@ public class Game {
 		}
 		
 		for (final Cell c : region.getCells()) {
-			if (remainingValues.remove((Object) values[c.getRow()][c.getColumn()])) {
+			final Object cellValue = values[c.getRow()][c.getColumn()];
+			if (remainingValues.remove(cellValue)) {
 				remainingCells.remove(c);
 			}
 		}
