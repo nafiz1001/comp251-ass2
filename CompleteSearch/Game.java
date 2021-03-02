@@ -239,7 +239,7 @@ public class Game {
 		for (final Region r : sudoku.getRegions()) {
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
-			remainingCellsAndValues(values, r, remainingCells, remainingValues);
+			remainingCellsAndValues(sudoku.getValues(), r, remainingCells, remainingValues);
 
 			for (final Cell c : remainingCells) {
 				remainingValues.removeAll(invalidValues(sudoku.getValues(), r, c, coordToCell, cellToRegion));
