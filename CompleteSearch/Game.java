@@ -214,6 +214,8 @@ public class Game {
 			remainingCellsAndValues(values, r, remainingCells, remainingValues);
 			
 			for (final Cell c : remainingCells) {
+				alreadySolved = false;
+
 				remainingValues.removeAll(invalidValues(values, r, c, coordToCell, cellToRegion));
 
 				for (final Integer remainingValue : remainingValues) {
