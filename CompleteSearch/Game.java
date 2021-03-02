@@ -120,8 +120,8 @@ public class Game {
 
 		// do not use value of neighboring cells
 		for (final int[] currDeltaIndices : deltaIndices) {
-			final int otherRow = currDeltaIndices[0] + cell.getColumn();
-			final int otherColumn = currDeltaIndices[1] + cell.getRow();
+			final int otherRow = currDeltaIndices[1] + cell.getRow();
+			final int otherColumn = currDeltaIndices[0] + cell.getColumn();
 
 			if (
 				otherRow >= 0 &&
