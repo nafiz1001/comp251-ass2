@@ -217,8 +217,8 @@ public class Game {
 		final int row = 0;
 		final int col = 0;
 
-				final Cell c = coordToCell[row][col];
-				final Region r = cellToRegion.get(c);
+		final Cell c = coordToCell[row][col];
+		final Region r = cellToRegion.get(c);
 		final int[][] valuesCopy = copyValues(sudoku.getValues());
 
 		if (sudoku.getValue(c.row, c.column) == -1) {
