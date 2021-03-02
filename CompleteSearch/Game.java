@@ -178,27 +178,27 @@ public class Game {
 
 		if (row >= sudoku.num_rows) return values;
 
-					final Cell c = coordToCell[row][col];
-					final Region r = cellToRegion.get(c);
+		final Cell c = coordToCell[row][col];
+		final Region r = cellToRegion.get(c);
 		final int[][] valuesCopy = copyValues(values);
 
 		if (values[c.row][c.column] == -1) {
-					for (int value = 1; value <= r.getCells().length; ++value) {
-						if (isValueValid(values, r, c, coordToCell, cellToRegion, value)) {
-							valuesCopy[c.row][c.column] = value;
+			for (int value = 1; value <= r.getCells().length; ++value) {
+				if (isValueValid(values, r, c, coordToCell, cellToRegion, value)) {
+					valuesCopy[c.row][c.column] = value;
 
-							//System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+					//System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
-							if (solution != null) {
-								return solution;
-							}
-						}
+					if (solution != null) {
+						return solution;
 					}
+				}
+			}
 		} else {
 			return solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
-				}
+		}
 
 		return null;
 	}
@@ -222,20 +222,20 @@ public class Game {
 		final int[][] valuesCopy = copyValues(sudoku.getValues());
 
 		if (sudoku.getValue(c.row, c.column) == -1) {
-				for (int value = 1; value <= r.getCells().length; ++value) {
-					if (isValueValid(sudoku.getValues(), r, c, coordToCell, cellToRegion, value)) {
-						valuesCopy[c.row][c.column] = value;
+			for (int value = 1; value <= r.getCells().length; ++value) {
+				if (isValueValid(sudoku.getValues(), r, c, coordToCell, cellToRegion, value)) {
+					valuesCopy[c.row][c.column] = value;
 
-						//System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+					//System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
-						if (solution != null) {
+					if (solution != null) {
 						sudoku.setValues(solution);
 						return solution;
-						}
 					}
 				}
+			}
 		} else {
 			sudoku.setValues(solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1));
 		}
