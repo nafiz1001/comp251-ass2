@@ -201,30 +201,30 @@ public class Game {
 		boolean alreadySolved = true;
 
 		for (int row = 0; row < values.length; ++row) {
-			
+
 			for (int col = 0; col < values[row].length; ++col) {
 				if (values[row][col] == -1) {
-				alreadySolved = false;
+					alreadySolved = false;
 
 					final Cell c = coordToCell[row][col];
 					final Region r = cellToRegion.get(c);
 
 					for (int value = 1; value <= r.getCells().length; ++value) {
 						if (isValueValid(values, r, c, coordToCell, cellToRegion, value) && !(dpInvalidValues.containsKey(c) && dpInvalidValues.get(c).contains(value))) {
-					final int[][] valuesCopy = copyValues(values);
+							final int[][] valuesCopy = copyValues(values);
 							valuesCopy[c.row][c.column] = value;
 
-					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+							System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-						final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
+							final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
 
-					if (solution != null) {
-						return solution;
+							if (solution != null) {
+								return solution;
+							}
+						}
 					}
 				}
 			}
-		}
-		}
 		}
 
 		if (alreadySolved) {
@@ -255,18 +255,18 @@ public class Game {
 
 				for (int value = 1; value <= r.getCells().length; ++value) {
 					if (isValueValid(sudoku.getValues(), r, c, coordToCell, cellToRegion, value)) {
-					final int[][] valuesCopy = copyValues(sudoku.getValues());
+						final int[][] valuesCopy = copyValues(sudoku.getValues());
 						valuesCopy[c.row][c.column] = value;
 
-					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+						System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
+						final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
 
-					if (solution != null) {
-						sudoku.setValues(solution);
-						return sudoku.getValues();
-					} else {
-						if (dpInvalidValues.containsKey(c)) dpInvalidValues.put(c, new ArrayList<>());
+						if (solution != null) {
+							sudoku.setValues(solution);
+							return sudoku.getValues();
+						} else {
+							if (!dpInvalidValues.containsKey(c)) dpInvalidValues.put(c, new ArrayList<>());
 
 							dpInvalidValues.get(c).add(value);
 						}
@@ -280,7 +280,8 @@ public class Game {
 
 	
 	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
+		try {
+			Scanner sc = new Scanner(new File("/home/nafiz/Documents/comp251-ass2/CompleteSearch/test1.in"));
 		int rows = sc.nextInt();
 		int columns = sc.nextInt();
 		int[][] board = new int[rows][columns];
@@ -324,6 +325,9 @@ public class Game {
 				}
 			}
 			System.out.println();
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
