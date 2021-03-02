@@ -166,7 +166,7 @@ public class Game {
 		return invalidValues;
 	}
 
-	public void solveByObviousness(int[][] values) {
+	public void solveByRemainingValues(int[][] values) {
 		for (final Region r : sudoku.getRegions()) {
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
@@ -204,7 +204,7 @@ public class Game {
 
 	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
 		// initial progress
-		solveByObviousness(values);
+		solveByRemainingValues(values);
 
 		boolean alreadySolved = true;
 
@@ -252,7 +252,7 @@ public class Game {
 		}
 
 		// initial progress
-		solveByObviousness(sudoku.getValues());
+		solveByRemainingValues(sudoku.getValues());
 
 		for (final Region r : sudoku.getRegions()) {
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
