@@ -187,7 +187,7 @@ public class Game {
 						if (isValueValid(values, r, c, coordToCell, cellToRegion, value)) {
 							valuesCopy[c.row][c.column] = value;
 
-							System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+							//System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
@@ -226,7 +226,7 @@ public class Game {
 					if (isValueValid(sudoku.getValues(), r, c, coordToCell, cellToRegion, value)) {
 						valuesCopy[c.row][c.column] = value;
 
-						System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
+						//System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
@@ -244,8 +244,7 @@ public class Game {
 
 	
 	public static void main(String[] args) {
-		try {
-			Scanner sc = new Scanner(new File("/home/nafiz/Documents/comp251-ass2/CompleteSearch/test1.in"));
+		Scanner sc = new Scanner(System.in);
 		int rows = sc.nextInt();
 		int columns = sc.nextInt();
 		int[][] board = new int[rows][columns];
@@ -289,9 +288,6 @@ public class Game {
 				}
 			}
 			System.out.println();
-		}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	
