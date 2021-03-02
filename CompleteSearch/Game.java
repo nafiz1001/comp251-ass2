@@ -229,7 +229,7 @@ public class Game {
 		return dst;
 	}
 
-	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
+	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, HashMap<Cell, ArrayList<Integer>> dpInvalidValues) {
 		// initial progress
 		solveByRemainingValues(values);
 
@@ -249,6 +249,7 @@ public class Game {
 
 				for (final Integer remainingValue : remainingValues) {
 					
+					if (!(dpInvalidValues.containsKey(c) && dpInvalidValues.get(c).contains(remainingValue))) {
 					alreadySolved = false;
 
 					final int[][] valuesCopy = copyValues(values);
@@ -256,13 +257,14 @@ public class Game {
 
 					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
+						final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
 
 					if (solution != null) {
 						return solution;
 					}
 				}
 			}
+		}
 		}
 
 		if (alreadySolved) {
@@ -288,6 +290,8 @@ public class Game {
 
 		System.out.println(valuesToString(sudoku.getValues(), coordToCell, cellToRegion, null));
 
+		final HashMap<Cell, ArrayList<Integer>> dpInvalidValues = new HashMap<>();
+
 		for (final Region r : sudoku.getRegions()) {
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
@@ -302,11 +306,15 @@ public class Game {
 
 					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
+					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
 
 					if (solution != null) {
 						sudoku.setValues(solution);
 						return sudoku.getValues();
+					} else {
+						if (dpInvalidValues.containsKey(c)) dpInvalidValues.put(c, new ArrayList<>());
+
+						dpInvalidValues.get(c).add(remainingValue);
 					}
 				}
 			}
