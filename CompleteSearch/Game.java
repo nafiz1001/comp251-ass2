@@ -78,31 +78,12 @@ public class Game {
 
 	}
 
-        public void remainingCellsAndValues(int[][] values, Region region, ArrayList<Cell> remainingCells, ArrayList<Integer> remainingValues) {
-		final int max_num = region.getCells().length;
-
-		remainingValues.ensureCapacity(max_num);
-		remainingCells.addAll(Arrays.asList(region.getCells()));
-		
-		for (int i = 1; i <= max_num; ++i) {
-			remainingValues.add(i);
-		}
-		
-		for (final Cell c : region.getCells()) {
-			final Object cellValue = values[c.getRow()][c.getColumn()];
-			if (remainingValues.remove(cellValue)) {
-				remainingCells.remove(c);
-			}
-		}
-	}
-
-        public HashSet<Integer> invalidValues(int[][] values, Region region, Cell cell, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
-		final HashSet<Integer> invalidValues = new HashSet<>();
+	public boolean isValueValid(int[][] values, Region region, Cell cell, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, int value) {
 
 		// cannot contain value already present in the region
 		for (final Cell otherCell : region.getCells()) {
 			final int otherCellValue = values[otherCell.getRow()][otherCell.getColumn()];
-			if (cell != otherCell && otherCellValue != -1) invalidValues.add(otherCellValue);
+			if (cell != otherCell && otherCellValue == value) return false;
 		}
 
 		final int[][] deltaIndices = {
@@ -131,7 +112,7 @@ public class Game {
 				otherColumn < sudoku.num_columns
 			) {
 				final int otherCellValue = values[otherRow][otherColumn];
-				if (otherCellValue != -1) invalidValues.add(values[otherRow][otherColumn]);
+				if (otherCellValue == value) return false;
 
 				// final Cell otherCell = coordToCell[otherRow][otherColumn];
 				// final Region neighboringRegion = cellToRegion.get(otherCell);
@@ -157,20 +138,7 @@ public class Game {
 		// 	}
 		// }
 
-		return invalidValues;
-	}
-
-	public void solveByRemainingValues(int[][] values) {
-		for (final Region r : sudoku.getRegions()) {
-			final ArrayList<Cell> remainingCells = new ArrayList<>();
-			final ArrayList<Integer> remainingValues = new ArrayList<>();
-			remainingCellsAndValues(values, r, remainingCells, remainingValues);
-
-			if (remainingValues.size() == 1) {
-				final Cell remainingCell = remainingCells.get(0);
-				sudoku.setValue(remainingCell.getRow(), remainingCell.getColumn(), remainingValues.get(0));
-			}
-		}
+		return true;
 	}
 
 	public String valuesToString(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, Cell currentCell) {
@@ -230,30 +198,21 @@ public class Game {
 	}
 
 	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, HashMap<Cell, ArrayList<Integer>> dpInvalidValues) {
-		// initial progress
-		solveByRemainingValues(values);
-
-		System.out.println(valuesToString(values, coordToCell, cellToRegion, null));
-
 		boolean alreadySolved = true;
 
-		for (final Region r : sudoku.getRegions()) {
-			final ArrayList<Cell> remainingCells = new ArrayList<>();
-			final ArrayList<Integer> remainingValues = new ArrayList<>();
-			remainingCellsAndValues(values, r, remainingCells, remainingValues);
+		for (int row = 0; row < values.length; ++row) {
 			
-			for (final Cell c : remainingCells) {
+			for (int col = 0; col < values[row].length; ++col) {
+				if (values[row][col] == -1) {
 				alreadySolved = false;
 
-				remainingValues.removeAll(invalidValues(values, r, c, coordToCell, cellToRegion));
+					final Cell c = coordToCell[row][col];
+					final Region r = cellToRegion.get(c);
 
-				for (final Integer remainingValue : remainingValues) {
-					
-					if (!(dpInvalidValues.containsKey(c) && dpInvalidValues.get(c).contains(remainingValue))) {
-					alreadySolved = false;
-
+					for (int value = 1; value <= r.getCells().length; ++value) {
+						if (isValueValid(values, r, c, coordToCell, cellToRegion, value) && !(dpInvalidValues.containsKey(c) && dpInvalidValues.get(c).contains(value))) {
 					final int[][] valuesCopy = copyValues(values);
-					valuesCopy[c.row][c.column] = remainingValue;
+							valuesCopy[c.row][c.column] = value;
 
 					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
@@ -264,6 +223,7 @@ public class Game {
 					}
 				}
 			}
+		}
 		}
 		}
 
@@ -285,24 +245,18 @@ public class Game {
 			}
 		}
 
-		// initial progress
-		solveByRemainingValues(sudoku.getValues());
-
-		System.out.println(valuesToString(sudoku.getValues(), coordToCell, cellToRegion, null));
-
 		final HashMap<Cell, ArrayList<Integer>> dpInvalidValues = new HashMap<>();
 
-		for (final Region r : sudoku.getRegions()) {
-			final ArrayList<Cell> remainingCells = new ArrayList<>();
-			final ArrayList<Integer> remainingValues = new ArrayList<>();
-			remainingCellsAndValues(sudoku.getValues(), r, remainingCells, remainingValues);
+		for (int row = 0; row < sudoku.num_rows; ++row) {
 
-			for (final Cell c : remainingCells) {
-				remainingValues.removeAll(invalidValues(sudoku.getValues(), r, c, coordToCell, cellToRegion));
+			for (int col = 0; col < sudoku.num_columns; ++col) {
+				final Cell c = coordToCell[row][col];
+				final Region r = cellToRegion.get(c);
 
-				for (final Integer remainingValue : remainingValues) {
+				for (int value = 1; value <= r.getCells().length; ++value) {
+					if (isValueValid(sudoku.getValues(), r, c, coordToCell, cellToRegion, value)) {
 					final int[][] valuesCopy = copyValues(sudoku.getValues());
-					valuesCopy[c.row][c.column] = remainingValue;
+						valuesCopy[c.row][c.column] = value;
 
 					System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
@@ -314,7 +268,8 @@ public class Game {
 					} else {
 						if (dpInvalidValues.containsKey(c)) dpInvalidValues.put(c, new ArrayList<>());
 
-						dpInvalidValues.get(c).add(remainingValue);
+							dpInvalidValues.get(c).add(value);
+						}
 					}
 				}
 			}
