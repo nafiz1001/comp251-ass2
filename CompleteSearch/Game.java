@@ -116,14 +116,8 @@ public class Game {
 			{-1, -1} // top left
 		};
 
-		// cannot contain value already present in the region
-		for (final Cell otherCell : region.getCells()) {
-			final int otherCellValue = values[otherCell.getRow()][otherCell.getColumn()];
-			if (cell != otherCell && otherCellValue != -1) invalidValues.add(otherCellValue);
-		}
-
-		// later used for AOT invalid value
-		final HashMap<Region, ArrayList<Cell>> neighboringRegionToCells = new HashMap<>();
+		// // later used for AOT invalid value
+		// final HashMap<Region, ArrayList<Cell>> neighboringRegionToCells = new HashMap<>();
 
 		// do not use value of neighboring cells
 		for (final int[] currDeltaIndices : deltaIndices) {
@@ -139,29 +133,29 @@ public class Game {
 				final int otherCellValue = values[otherRow][otherColumn];
 				if (otherCellValue != -1) invalidValues.add(values[otherRow][otherColumn]);
 
-				final Cell otherCell = coordToCell[otherRow][otherColumn];
-				final Region neighboringRegion = cellToRegion.get(otherCell);
-				if (!neighboringRegionToCells.containsKey(neighboringRegion)) {
-					neighboringRegionToCells.put(neighboringRegion, new ArrayList<>());
-				}
+				// final Cell otherCell = coordToCell[otherRow][otherColumn];
+				// final Region neighboringRegion = cellToRegion.get(otherCell);
+				// if (!neighboringRegionToCells.containsKey(neighboringRegion)) {
+				// 	neighboringRegionToCells.put(neighboringRegion, new ArrayList<>());
+				// }
 
-				neighboringRegionToCells.get(neighboringRegion).add(otherCell);
+				// neighboringRegionToCells.get(neighboringRegion).add(otherCell);
 			}
 		}
 
-		// verify if the cell value is valid based on another region's size and current state
-		for (final Region r : neighboringRegionToCells.keySet()) {
-			final ArrayList<Integer> remainingValues = new ArrayList<>();
-			final ArrayList<Cell> remainingCells = new ArrayList<>();
+		// // verify if the cell value is valid based on another region's size and current state
+		// for (final Region r : neighboringRegionToCells.keySet()) {
+		// 	final ArrayList<Integer> remainingValues = new ArrayList<>();
+		// 	final ArrayList<Cell> remainingCells = new ArrayList<>();
 
-			remainingCellsAndValues(values, r, remainingCells, remainingValues);
+		// 	remainingCellsAndValues(values, r, remainingCells, remainingValues);
 
-			remainingCells.retainAll(neighboringRegionToCells.get(r));
+		// 	remainingCells.retainAll(neighboringRegionToCells.get(r));
 
-			if (remainingCells.size() == remainingValues.size()) {
-				for (int v : remainingValues) invalidValues.add(v);
-			}
-		}
+		// 	if (remainingCells.size() == remainingValues.size()) {
+		// 		for (int v : remainingValues) invalidValues.add(v);
+		// 	}
+		// }
 
 		return invalidValues;
 	}
