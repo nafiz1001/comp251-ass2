@@ -206,6 +206,8 @@ public class Game {
 		// initial progress
 		solveByObviousness(values);
 
+		boolean alreadySolved = true;
+
 		for (final Region r : sudoku.getRegions()) {
 			final ArrayList<Cell> remainingCells = new ArrayList<>();
 			final ArrayList<Integer> remainingValues = new ArrayList<>();
@@ -215,6 +217,9 @@ public class Game {
 				remainingValues.removeAll(invalidValues(values, r, c, coordToCell, cellToRegion));
 
 				for (final Integer remainingValue : remainingValues) {
+					
+					alreadySolved = false;
+
 					final int[][] valuesCopy = copyValues(values);
 					valuesCopy[c.row][c.column] = remainingValue;
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
@@ -226,7 +231,11 @@ public class Game {
 			}
 		}
 
+		if (alreadySolved) {
+			return values;
+		} else {
 		return null;
+	}
 	}
 	
 	public int[][] solver() {
