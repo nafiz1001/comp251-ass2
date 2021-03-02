@@ -197,41 +197,36 @@ public class Game {
 		return dst;
 	}
 
-	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
-		boolean alreadySolved = true;
+	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, int rowStart, int colStart) {
 
-		for (int row = 0; row < values.length; ++row) {
+		final int row = colStart >= sudoku.num_columns ? rowStart + 1 : rowStart;
+		final int col = colStart >= sudoku.num_columns ? 0 : colStart;
 
-			for (int col = 0; col < values[row].length; ++col) {
-				if (values[row][col] == -1) {
-					alreadySolved = false;
+		if (row >= sudoku.num_rows) return values;
 
 					final Cell c = coordToCell[row][col];
 					final Region r = cellToRegion.get(c);
+		final int[][] valuesCopy = copyValues(values);
 
+		if (values[c.row][c.column] == -1) {
 					for (int value = 1; value <= r.getCells().length; ++value) {
 						if (isValueValid(values, r, c, coordToCell, cellToRegion, value)) {
-							final int[][] valuesCopy = copyValues(values);
 							valuesCopy[c.row][c.column] = value;
 
 							System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-							final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
+					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
 							if (solution != null) {
 								return solution;
 							}
 						}
 					}
-				}
-			}
-		}
-
-		if (alreadySolved) {
-			return values;
 		} else {
+			return solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
+				}
+
 		return null;
-	}
 	}
 	
 	public int[][] solver() {
@@ -245,28 +240,29 @@ public class Game {
 			}
 		}
 
-		for (int row = 0; row < sudoku.num_rows; ++row) {
+		final int row = 0;
+		final int col = 0;
 
-			for (int col = 0; col < sudoku.num_columns; ++col) {
 				final Cell c = coordToCell[row][col];
 				final Region r = cellToRegion.get(c);
+		final int[][] valuesCopy = copyValues(sudoku.getValues());
 
+		if (sudoku.getValue(c.row, c.column) == -1) {
 				for (int value = 1; value <= r.getCells().length; ++value) {
 					if (isValueValid(sudoku.getValues(), r, c, coordToCell, cellToRegion, value)) {
-						final int[][] valuesCopy = copyValues(sudoku.getValues());
 						valuesCopy[c.row][c.column] = value;
 
 						System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-						final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
+					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
 						if (solution != null) {
-							sudoku.setValues(solution);
-							return sudoku.getValues();
+						return solution;
 						}
 					}
 				}
-			}
+		} else {
+			sudoku.setValues(solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1));
 		}
 
 		return sudoku.getValues();
