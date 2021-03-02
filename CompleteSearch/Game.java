@@ -197,7 +197,7 @@ public class Game {
 		return dst;
 	}
 
-	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion, HashMap<Cell, ArrayList<Integer>> dpInvalidValues) {
+	public int[][] solver_recurse(int[][] values, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
 		boolean alreadySolved = true;
 
 		for (int row = 0; row < values.length; ++row) {
@@ -210,13 +210,13 @@ public class Game {
 					final Region r = cellToRegion.get(c);
 
 					for (int value = 1; value <= r.getCells().length; ++value) {
-						if (isValueValid(values, r, c, coordToCell, cellToRegion, value) && !(dpInvalidValues.containsKey(c) && dpInvalidValues.get(c).contains(value))) {
+						if (isValueValid(values, r, c, coordToCell, cellToRegion, value)) {
 							final int[][] valuesCopy = copyValues(values);
 							valuesCopy[c.row][c.column] = value;
 
 							System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-							final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
+							final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
 
 							if (solution != null) {
 								return solution;
@@ -245,8 +245,6 @@ public class Game {
 			}
 		}
 
-		final HashMap<Cell, ArrayList<Integer>> dpInvalidValues = new HashMap<>();
-
 		for (int row = 0; row < sudoku.num_rows; ++row) {
 
 			for (int col = 0; col < sudoku.num_columns; ++col) {
@@ -260,15 +258,11 @@ public class Game {
 
 						System.out.println(valuesToString(valuesCopy, coordToCell, cellToRegion, c));
 
-						final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, dpInvalidValues);
+						final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion);
 
 						if (solution != null) {
 							sudoku.setValues(solution);
 							return sudoku.getValues();
-						} else {
-							if (!dpInvalidValues.containsKey(c)) dpInvalidValues.put(c, new ArrayList<>());
-
-							dpInvalidValues.get(c).add(value);
 						}
 					}
 				}
