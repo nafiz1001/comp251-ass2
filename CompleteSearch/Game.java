@@ -231,6 +231,7 @@ public class Game {
 					final int[][] solution = solver_recurse(valuesCopy, coordToCell, cellToRegion, row, col + 1);
 
 						if (solution != null) {
+						sudoku.setValues(solution);
 						return solution;
 						}
 					}
