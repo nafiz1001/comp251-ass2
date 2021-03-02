@@ -97,9 +97,6 @@ public class Game {
 			{-1, -1} // top left
 		};
 
-		// // later used for AOT invalid value
-		// final HashMap<Region, ArrayList<Cell>> neighboringRegionToCells = new HashMap<>();
-
 		// do not use value of neighboring cells
 		for (final int[] currDeltaIndices : deltaIndices) {
 			final int otherRow = currDeltaIndices[1] + cell.getRow();
@@ -113,31 +110,8 @@ public class Game {
 			) {
 				final int otherCellValue = values[otherRow][otherColumn];
 				if (otherCellValue == value) return false;
-
-				// final Cell otherCell = coordToCell[otherRow][otherColumn];
-				// final Region neighboringRegion = cellToRegion.get(otherCell);
-				// if (!neighboringRegionToCells.containsKey(neighboringRegion)) {
-				// 	neighboringRegionToCells.put(neighboringRegion, new ArrayList<>());
-				// }
-
-				// neighboringRegionToCells.get(neighboringRegion).add(otherCell);
 			}
 		}
-
-		// // verify if the cell value is valid based on another region's size and current state
-		// for (final Region r : neighboringRegionToCells.keySet()) {
-		// 	final ArrayList<Integer> remainingValues = new ArrayList<>();
-		// 	final ArrayList<Cell> remainingCells = new ArrayList<>();
-
-		// 	remainingCellsAndValues(values, r, remainingCells, remainingValues);
-
-		// 	remainingCells.retainAll(neighboringRegionToCells.get(r));
-
-		// 	if (remainingCells.size() == remainingValues.size()) {
-		// 		for (int v : remainingValues) invalidValues.add(v);
-		// 	}
-		// }
-
 		return true;
 	}
 
