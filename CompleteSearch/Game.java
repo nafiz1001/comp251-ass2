@@ -99,6 +99,12 @@ public class Game {
         public HashSet<Integer> invalidValues(int[][] values, Region region, Cell cell, Cell[][] coordToCell, HashMap<Cell, Region> cellToRegion) {
 		final HashSet<Integer> invalidValues = new HashSet<>();
 
+		// cannot contain value already present in the region
+		for (final Cell otherCell : region.getCells()) {
+			final int otherCellValue = values[otherCell.getRow()][otherCell.getColumn()];
+			if (cell != otherCell && otherCellValue != -1) invalidValues.add(otherCellValue);
+		}
+
 		final int[][] deltaIndices = {
 			{0, -1}, // top
 			{1, -1}, // top right
