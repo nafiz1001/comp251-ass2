@@ -36,10 +36,10 @@ public class HW_Sched {
 		}
 
 		for (final Assignment a : Assignments) {
-			for (int i = a.deadline - 1; i >= 0; --i) {
+		    inner: for (int i = a.deadline - 1; i >= 0; --i) {
 				if (homeworkPlan[i] == -1) {
 					homeworkPlan[i] = a.number;
-					break;
+					break inner;
 				}
 			}
 		}
