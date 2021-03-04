@@ -35,11 +35,10 @@ public class HW_Sched {
 			homeworkPlan[i] = -1;
 		}
 
-		for (int i = 0; i < Assignments.size(); ++i) {
-			Assignment a = Assignments.get(i);
-			for (int j = a.deadline - 1; j >= 0; --j) {
-				if (homeworkPlan[j] == -1) {
-					homeworkPlan[j] = a.number;
+		for (final Assignment a : Assignments) {
+			for (int i = a.deadline - 1; i >= 0; --i) {
+				if (homeworkPlan[i] == -1) {
+					homeworkPlan[i] = a.number;
 					break;
 				}
 			}
