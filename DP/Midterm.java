@@ -70,6 +70,7 @@ public class Midterm {
 	
 	public static int lost_marks(int[] penalization) {
 		final int NOT_INITIALIZED = -1;
+		final int NO_SOLUTION = Integer.MAX_VALUE;
 
 		dp_table = new int[penalization.length][penalization.length];
 		for (int i = 0; i < dp_table.length; ++i) {
@@ -78,7 +79,7 @@ public class Midterm {
 			}
 		}
 
-		int minMarksLost = Integer.MAX_VALUE;
+		int minMarksLost = NO_SOLUTION;
 		final int indexLast = penalization.length - 1;
 		for (int i = 0; i < indexLast; ++i) {
 		        final int precJumpReq = (indexLast - i) - 1;
