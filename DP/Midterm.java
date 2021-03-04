@@ -81,7 +81,7 @@ public class Midterm {
 		int minMarksLost = Integer.MAX_VALUE;
 		final int indexLast = penalization.length - 1;
 		for (int i = 0; i < indexLast; ++i) {
-			final int precJumpReq = indexLast - i - 1;
+		        final int precJumpReq = (indexLast - i) - 1;
 			// if (precJumpReq <= 0) {
 			// 	System.exit(2);
 			// }
