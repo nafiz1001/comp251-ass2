@@ -92,14 +92,13 @@ public class Game {
 			final int otherColumn = deltaX + cell.getColumn();
 
 			if (
-			        otherRow != cell.row &&
 				otherRow >= 0 &&
 				otherRow < sudoku.num_rows &&
 
-				otherColumn != cell.column &&
 				otherColumn >= 0 &&
 				otherColumn < sudoku.num_columns &&
 
+				coordToCell[otherRow][otherColumn] != cell && // not the current cell
 				values[otherRow][otherColumn] == value
 			) {
 				return false;
