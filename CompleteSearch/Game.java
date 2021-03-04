@@ -227,7 +227,7 @@ public class Game {
 
 					if (solution != null) {
 						sudoku.setValues(solution);
-						return solution;
+						return sudoku.getValues();
 					}
 				}
 			}
