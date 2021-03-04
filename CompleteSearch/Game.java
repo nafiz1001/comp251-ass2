@@ -82,36 +82,31 @@ public class Game {
 
 		// cannot contain value already present in the region
 		for (final Cell otherCell : region.getCells()) {
-			final int otherCellValue = values[otherCell.getRow()][otherCell.getColumn()];
-			if (cell != otherCell && otherCellValue == value) return false;
+			if (cell != otherCell && values[otherCell.row][otherCell.column] == value) return false;
 		}
-
-		final int[][] deltaIndices = {
-			{0, -1}, // top
-			{1, -1}, // top right
-			{1, 0}, // right
-			{1, 1}, // bottom right
-			{0, 1}, // bottom
-			{-1, 1}, // bottom left
-			{-1, 0}, // left
-			{-1, -1} // top left
-		};
 
 		// do not use value of neighboring cells
-		for (final int[] currDeltaIndices : deltaIndices) {
-			final int otherRow = currDeltaIndices[1] + cell.getRow();
-			final int otherColumn = currDeltaIndices[0] + cell.getColumn();
+		for (int deltaY = -1; deltaY <= 1; ++deltaY) {
+		    for (int deltaX = -1; deltaX <= 1; ++deltaX) {
+			final int otherRow = deltaY + cell.getRow();
+			final int otherColumn = deltaX + cell.getColumn();
 
 			if (
+			        otherRow != cell.row &&
 				otherRow >= 0 &&
 				otherRow < sudoku.num_rows &&
+
+				otherColumn != cell.column &&
 				otherColumn >= 0 &&
-				otherColumn < sudoku.num_columns
+				otherColumn < sudoku.num_columns &&
+
+				values[otherRow][otherColumn] == value
 			) {
-				final int otherCellValue = values[otherRow][otherColumn];
-				if (otherCellValue == value) return false;
+				return false;
 			}
+		    }
 		}
+
 		return true;
 	}
 
